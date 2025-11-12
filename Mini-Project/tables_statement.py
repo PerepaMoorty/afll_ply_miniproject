@@ -29,7 +29,9 @@ t_NUMBER = r'\d+'
 t_ignore = ' \t\n'
 
 def t_error(t):
+    print(f"Illegal character '{t.value[0]}' at position {t.lexpos}")
     t.lexer.skip(1)
+    exit()
 
 lexer = lex.lex()
 lexer.input(code)
@@ -54,7 +56,10 @@ def p_assignment(p):
 def p_table(p):
     '''table : LBRACE fields RBRACE
              | LBRACE RBRACE'''
-    p[0] = ('table', p[2] if len(p) == 4 else [])
+    if len(p) == 4:
+        p[0] = ('table', p[2])
+    else:
+        p[0] = ('table', [])
 
 def p_fields_multi(p):
     'fields : fields COMMA field'
@@ -78,9 +83,22 @@ def p_value(p):
              | table'''
     p[0] = p[1]
 
+# Error handler
 def p_error(p):
-    pass
+    if p:
+        print(f"Syntax error at token '{p.type}' with value '{p.value}' (line unknown)")
+    else:
+        print("Syntax error at EOF")
 
 parser = yacc.yacc()
-print("\n\nParser Part:")
-print(parser.parse(code))
+
+print("\nParser Part:")
+try:
+    result = parser.parse(code)
+    if result:
+        print("Parsed successfully:")
+        print(result)
+    else:
+        print("Parsing failed: Invalid syntax or empty parse result")
+except Exception as e:
+    print("Parsing failed with error:", e)

@@ -3,56 +3,53 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Grammar
 
 Rule 0     S' -> statement
-Rule 1     statement -> if_statement
+Rule 1     statement -> for_loop
 Rule 2     statement -> assignment
-Rule 3     if_statement -> IF condition THEN statements END
-Rule 4     if_statement -> IF condition THEN statements ELSE statements END
-Rule 5     condition -> ID OP expr
-Rule 6     statements -> statements statement
-Rule 7     statements -> statement
-Rule 8     assignment -> ID ASSIGN expr
-Rule 9     expr -> NUMBER
-Rule 10    expr -> ID
-Rule 11    expr -> expr PLUS expr
+Rule 3     for_loop -> FOR ID ASSIGN expr COMMA expr DO statements END
+Rule 4     for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END
+Rule 5     statements -> statements statement
+Rule 6     statements -> statement
+Rule 7     assignment -> ID ASSIGN expr
+Rule 8     expr -> NUMBER
+Rule 9     expr -> ID
+Rule 10    expr -> expr PLUS expr
 
 Terminals, with rules where they appear
 
-ASSIGN               : 8
-ELSE                 : 4
+ASSIGN               : 3 4 7
+COMMA                : 3 4 4
+DO                   : 3 4
 END                  : 3 4
-ID                   : 5 8 10
-IF                   : 3 4
-NUMBER               : 9
-OP                   : 5
-PLUS                 : 11
-THEN                 : 3 4
+FOR                  : 3 4
+ID                   : 3 4 7 9
+NUMBER               : 8
+PLUS                 : 10
 error                : 
 
 Nonterminals, with rules where they appear
 
 assignment           : 2
-condition            : 3 4
-expr                 : 5 8 11 11
-if_statement         : 1
-statement            : 6 7 0
-statements           : 3 4 4 6
+expr                 : 3 3 4 4 4 7 10 10
+for_loop             : 1
+statement            : 5 6 0
+statements           : 3 4 5
 
 Parsing method: LALR
 
 state 0
 
     (0) S' -> . statement
-    (1) statement -> . if_statement
+    (1) statement -> . for_loop
     (2) statement -> . assignment
-    (3) if_statement -> . IF condition THEN statements END
-    (4) if_statement -> . IF condition THEN statements ELSE statements END
-    (8) assignment -> . ID ASSIGN expr
+    (3) for_loop -> . FOR ID ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> . FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END
+    (7) assignment -> . ID ASSIGN expr
 
-    IF              shift and go to state 4
+    FOR             shift and go to state 4
     ID              shift and go to state 5
 
     statement                      shift and go to state 1
-    if_statement                   shift and go to state 2
+    for_loop                       shift and go to state 2
     assignment                     shift and go to state 3
 
 state 1
@@ -63,13 +60,12 @@ state 1
 
 state 2
 
-    (1) statement -> if_statement .
+    (1) statement -> for_loop .
 
-    $end            reduce using rule 1 (statement -> if_statement .)
-    END             reduce using rule 1 (statement -> if_statement .)
-    ELSE            reduce using rule 1 (statement -> if_statement .)
-    IF              reduce using rule 1 (statement -> if_statement .)
-    ID              reduce using rule 1 (statement -> if_statement .)
+    $end            reduce using rule 1 (statement -> for_loop .)
+    END             reduce using rule 1 (statement -> for_loop .)
+    FOR             reduce using rule 1 (statement -> for_loop .)
+    ID              reduce using rule 1 (statement -> for_loop .)
 
 
 state 3
@@ -78,263 +74,292 @@ state 3
 
     $end            reduce using rule 2 (statement -> assignment .)
     END             reduce using rule 2 (statement -> assignment .)
-    ELSE            reduce using rule 2 (statement -> assignment .)
-    IF              reduce using rule 2 (statement -> assignment .)
+    FOR             reduce using rule 2 (statement -> assignment .)
     ID              reduce using rule 2 (statement -> assignment .)
 
 
 state 4
 
-    (3) if_statement -> IF . condition THEN statements END
-    (4) if_statement -> IF . condition THEN statements ELSE statements END
-    (5) condition -> . ID OP expr
+    (3) for_loop -> FOR . ID ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> FOR . ID ASSIGN expr COMMA expr COMMA expr DO statements END
 
-    ID              shift and go to state 7
+    ID              shift and go to state 6
 
-    condition                      shift and go to state 6
 
 state 5
 
-    (8) assignment -> ID . ASSIGN expr
+    (7) assignment -> ID . ASSIGN expr
 
-    ASSIGN          shift and go to state 8
+    ASSIGN          shift and go to state 7
 
 
 state 6
 
-    (3) if_statement -> IF condition . THEN statements END
-    (4) if_statement -> IF condition . THEN statements ELSE statements END
+    (3) for_loop -> FOR ID . ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> FOR ID . ASSIGN expr COMMA expr COMMA expr DO statements END
 
-    THEN            shift and go to state 9
+    ASSIGN          shift and go to state 8
 
 
 state 7
 
-    (5) condition -> ID . OP expr
+    (7) assignment -> ID ASSIGN . expr
+    (8) expr -> . NUMBER
+    (9) expr -> . ID
+    (10) expr -> . expr PLUS expr
 
-    OP              shift and go to state 10
+    NUMBER          shift and go to state 11
+    ID              shift and go to state 9
 
+    expr                           shift and go to state 10
 
 state 8
 
-    (8) assignment -> ID ASSIGN . expr
-    (9) expr -> . NUMBER
-    (10) expr -> . ID
-    (11) expr -> . expr PLUS expr
+    (3) for_loop -> FOR ID ASSIGN . expr COMMA expr DO statements END
+    (4) for_loop -> FOR ID ASSIGN . expr COMMA expr COMMA expr DO statements END
+    (8) expr -> . NUMBER
+    (9) expr -> . ID
+    (10) expr -> . expr PLUS expr
 
-    NUMBER          shift and go to state 13
-    ID              shift and go to state 11
+    NUMBER          shift and go to state 11
+    ID              shift and go to state 9
 
     expr                           shift and go to state 12
 
 state 9
 
-    (3) if_statement -> IF condition THEN . statements END
-    (4) if_statement -> IF condition THEN . statements ELSE statements END
-    (6) statements -> . statements statement
-    (7) statements -> . statement
-    (1) statement -> . if_statement
-    (2) statement -> . assignment
-    (3) if_statement -> . IF condition THEN statements END
-    (4) if_statement -> . IF condition THEN statements ELSE statements END
-    (8) assignment -> . ID ASSIGN expr
+    (9) expr -> ID .
 
-    IF              shift and go to state 4
-    ID              shift and go to state 5
+    PLUS            reduce using rule 9 (expr -> ID .)
+    $end            reduce using rule 9 (expr -> ID .)
+    END             reduce using rule 9 (expr -> ID .)
+    FOR             reduce using rule 9 (expr -> ID .)
+    ID              reduce using rule 9 (expr -> ID .)
+    COMMA           reduce using rule 9 (expr -> ID .)
+    DO              reduce using rule 9 (expr -> ID .)
 
-    statements                     shift and go to state 14
-    statement                      shift and go to state 15
-    if_statement                   shift and go to state 2
-    assignment                     shift and go to state 3
 
 state 10
 
-    (5) condition -> ID OP . expr
-    (9) expr -> . NUMBER
-    (10) expr -> . ID
-    (11) expr -> . expr PLUS expr
+    (7) assignment -> ID ASSIGN expr .
+    (10) expr -> expr . PLUS expr
 
-    NUMBER          shift and go to state 13
-    ID              shift and go to state 11
+    $end            reduce using rule 7 (assignment -> ID ASSIGN expr .)
+    END             reduce using rule 7 (assignment -> ID ASSIGN expr .)
+    FOR             reduce using rule 7 (assignment -> ID ASSIGN expr .)
+    ID              reduce using rule 7 (assignment -> ID ASSIGN expr .)
+    PLUS            shift and go to state 13
 
-    expr                           shift and go to state 16
 
 state 11
 
-    (10) expr -> ID .
+    (8) expr -> NUMBER .
 
-    PLUS            reduce using rule 10 (expr -> ID .)
-    $end            reduce using rule 10 (expr -> ID .)
-    END             reduce using rule 10 (expr -> ID .)
-    ELSE            reduce using rule 10 (expr -> ID .)
-    IF              reduce using rule 10 (expr -> ID .)
-    ID              reduce using rule 10 (expr -> ID .)
-    THEN            reduce using rule 10 (expr -> ID .)
+    PLUS            reduce using rule 8 (expr -> NUMBER .)
+    $end            reduce using rule 8 (expr -> NUMBER .)
+    END             reduce using rule 8 (expr -> NUMBER .)
+    FOR             reduce using rule 8 (expr -> NUMBER .)
+    ID              reduce using rule 8 (expr -> NUMBER .)
+    COMMA           reduce using rule 8 (expr -> NUMBER .)
+    DO              reduce using rule 8 (expr -> NUMBER .)
 
 
 state 12
 
-    (8) assignment -> ID ASSIGN expr .
-    (11) expr -> expr . PLUS expr
+    (3) for_loop -> FOR ID ASSIGN expr . COMMA expr DO statements END
+    (4) for_loop -> FOR ID ASSIGN expr . COMMA expr COMMA expr DO statements END
+    (10) expr -> expr . PLUS expr
 
-    $end            reduce using rule 8 (assignment -> ID ASSIGN expr .)
-    END             reduce using rule 8 (assignment -> ID ASSIGN expr .)
-    ELSE            reduce using rule 8 (assignment -> ID ASSIGN expr .)
-    IF              reduce using rule 8 (assignment -> ID ASSIGN expr .)
-    ID              reduce using rule 8 (assignment -> ID ASSIGN expr .)
-    PLUS            shift and go to state 17
+    COMMA           shift and go to state 14
+    PLUS            shift and go to state 13
 
 
 state 13
 
-    (9) expr -> NUMBER .
+    (10) expr -> expr PLUS . expr
+    (8) expr -> . NUMBER
+    (9) expr -> . ID
+    (10) expr -> . expr PLUS expr
 
-    PLUS            reduce using rule 9 (expr -> NUMBER .)
-    $end            reduce using rule 9 (expr -> NUMBER .)
-    END             reduce using rule 9 (expr -> NUMBER .)
-    ELSE            reduce using rule 9 (expr -> NUMBER .)
-    IF              reduce using rule 9 (expr -> NUMBER .)
-    ID              reduce using rule 9 (expr -> NUMBER .)
-    THEN            reduce using rule 9 (expr -> NUMBER .)
+    NUMBER          shift and go to state 11
+    ID              shift and go to state 9
 
+    expr                           shift and go to state 15
 
 state 14
 
-    (3) if_statement -> IF condition THEN statements . END
-    (4) if_statement -> IF condition THEN statements . ELSE statements END
-    (6) statements -> statements . statement
-    (1) statement -> . if_statement
-    (2) statement -> . assignment
-    (3) if_statement -> . IF condition THEN statements END
-    (4) if_statement -> . IF condition THEN statements ELSE statements END
-    (8) assignment -> . ID ASSIGN expr
+    (3) for_loop -> FOR ID ASSIGN expr COMMA . expr DO statements END
+    (4) for_loop -> FOR ID ASSIGN expr COMMA . expr COMMA expr DO statements END
+    (8) expr -> . NUMBER
+    (9) expr -> . ID
+    (10) expr -> . expr PLUS expr
 
-    END             shift and go to state 18
-    ELSE            shift and go to state 19
-    IF              shift and go to state 4
-    ID              shift and go to state 5
+    NUMBER          shift and go to state 11
+    ID              shift and go to state 9
 
-    statement                      shift and go to state 20
-    if_statement                   shift and go to state 2
-    assignment                     shift and go to state 3
+    expr                           shift and go to state 16
 
 state 15
 
-    (7) statements -> statement .
+    (10) expr -> expr PLUS expr .
+    (10) expr -> expr . PLUS expr
 
-    END             reduce using rule 7 (statements -> statement .)
-    ELSE            reduce using rule 7 (statements -> statement .)
-    IF              reduce using rule 7 (statements -> statement .)
-    ID              reduce using rule 7 (statements -> statement .)
+  ! shift/reduce conflict for PLUS resolved as shift
+    $end            reduce using rule 10 (expr -> expr PLUS expr .)
+    END             reduce using rule 10 (expr -> expr PLUS expr .)
+    FOR             reduce using rule 10 (expr -> expr PLUS expr .)
+    ID              reduce using rule 10 (expr -> expr PLUS expr .)
+    COMMA           reduce using rule 10 (expr -> expr PLUS expr .)
+    DO              reduce using rule 10 (expr -> expr PLUS expr .)
+    PLUS            shift and go to state 13
+
+  ! PLUS            [ reduce using rule 10 (expr -> expr PLUS expr .) ]
 
 
 state 16
 
-    (5) condition -> ID OP expr .
-    (11) expr -> expr . PLUS expr
+    (3) for_loop -> FOR ID ASSIGN expr COMMA expr . DO statements END
+    (4) for_loop -> FOR ID ASSIGN expr COMMA expr . COMMA expr DO statements END
+    (10) expr -> expr . PLUS expr
 
-    THEN            reduce using rule 5 (condition -> ID OP expr .)
-    PLUS            shift and go to state 17
+    DO              shift and go to state 18
+    COMMA           shift and go to state 17
+    PLUS            shift and go to state 13
 
 
 state 17
 
-    (11) expr -> expr PLUS . expr
-    (9) expr -> . NUMBER
-    (10) expr -> . ID
-    (11) expr -> . expr PLUS expr
+    (4) for_loop -> FOR ID ASSIGN expr COMMA expr COMMA . expr DO statements END
+    (8) expr -> . NUMBER
+    (9) expr -> . ID
+    (10) expr -> . expr PLUS expr
 
-    NUMBER          shift and go to state 13
-    ID              shift and go to state 11
+    NUMBER          shift and go to state 11
+    ID              shift and go to state 9
 
-    expr                           shift and go to state 21
+    expr                           shift and go to state 19
 
 state 18
 
-    (3) if_statement -> IF condition THEN statements END .
+    (3) for_loop -> FOR ID ASSIGN expr COMMA expr DO . statements END
+    (5) statements -> . statements statement
+    (6) statements -> . statement
+    (1) statement -> . for_loop
+    (2) statement -> . assignment
+    (3) for_loop -> . FOR ID ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> . FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END
+    (7) assignment -> . ID ASSIGN expr
 
-    $end            reduce using rule 3 (if_statement -> IF condition THEN statements END .)
-    END             reduce using rule 3 (if_statement -> IF condition THEN statements END .)
-    ELSE            reduce using rule 3 (if_statement -> IF condition THEN statements END .)
-    IF              reduce using rule 3 (if_statement -> IF condition THEN statements END .)
-    ID              reduce using rule 3 (if_statement -> IF condition THEN statements END .)
+    FOR             shift and go to state 4
+    ID              shift and go to state 5
 
+    statements                     shift and go to state 20
+    statement                      shift and go to state 21
+    for_loop                       shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 19
 
-    (4) if_statement -> IF condition THEN statements ELSE . statements END
-    (6) statements -> . statements statement
-    (7) statements -> . statement
-    (1) statement -> . if_statement
-    (2) statement -> . assignment
-    (3) if_statement -> . IF condition THEN statements END
-    (4) if_statement -> . IF condition THEN statements ELSE statements END
-    (8) assignment -> . ID ASSIGN expr
+    (4) for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr . DO statements END
+    (10) expr -> expr . PLUS expr
 
-    IF              shift and go to state 4
-    ID              shift and go to state 5
+    DO              shift and go to state 22
+    PLUS            shift and go to state 13
 
-    statements                     shift and go to state 22
-    statement                      shift and go to state 15
-    if_statement                   shift and go to state 2
-    assignment                     shift and go to state 3
 
 state 20
 
-    (6) statements -> statements statement .
+    (3) for_loop -> FOR ID ASSIGN expr COMMA expr DO statements . END
+    (5) statements -> statements . statement
+    (1) statement -> . for_loop
+    (2) statement -> . assignment
+    (3) for_loop -> . FOR ID ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> . FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END
+    (7) assignment -> . ID ASSIGN expr
 
-    END             reduce using rule 6 (statements -> statements statement .)
-    ELSE            reduce using rule 6 (statements -> statements statement .)
-    IF              reduce using rule 6 (statements -> statements statement .)
-    ID              reduce using rule 6 (statements -> statements statement .)
+    END             shift and go to state 23
+    FOR             shift and go to state 4
+    ID              shift and go to state 5
 
+    statement                      shift and go to state 24
+    for_loop                       shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 21
 
-    (11) expr -> expr PLUS expr .
-    (11) expr -> expr . PLUS expr
+    (6) statements -> statement .
 
-  ! shift/reduce conflict for PLUS resolved as shift
-    $end            reduce using rule 11 (expr -> expr PLUS expr .)
-    END             reduce using rule 11 (expr -> expr PLUS expr .)
-    ELSE            reduce using rule 11 (expr -> expr PLUS expr .)
-    IF              reduce using rule 11 (expr -> expr PLUS expr .)
-    ID              reduce using rule 11 (expr -> expr PLUS expr .)
-    THEN            reduce using rule 11 (expr -> expr PLUS expr .)
-    PLUS            shift and go to state 17
-
-  ! PLUS            [ reduce using rule 11 (expr -> expr PLUS expr .) ]
+    END             reduce using rule 6 (statements -> statement .)
+    FOR             reduce using rule 6 (statements -> statement .)
+    ID              reduce using rule 6 (statements -> statement .)
 
 
 state 22
 
-    (4) if_statement -> IF condition THEN statements ELSE statements . END
-    (6) statements -> statements . statement
-    (1) statement -> . if_statement
+    (4) for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO . statements END
+    (5) statements -> . statements statement
+    (6) statements -> . statement
+    (1) statement -> . for_loop
     (2) statement -> . assignment
-    (3) if_statement -> . IF condition THEN statements END
-    (4) if_statement -> . IF condition THEN statements ELSE statements END
-    (8) assignment -> . ID ASSIGN expr
+    (3) for_loop -> . FOR ID ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> . FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END
+    (7) assignment -> . ID ASSIGN expr
 
-    END             shift and go to state 23
-    IF              shift and go to state 4
+    FOR             shift and go to state 4
     ID              shift and go to state 5
 
-    statement                      shift and go to state 20
-    if_statement                   shift and go to state 2
+    statements                     shift and go to state 25
+    statement                      shift and go to state 21
+    for_loop                       shift and go to state 2
     assignment                     shift and go to state 3
 
 state 23
 
-    (4) if_statement -> IF condition THEN statements ELSE statements END .
+    (3) for_loop -> FOR ID ASSIGN expr COMMA expr DO statements END .
 
-    $end            reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
-    END             reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
-    ELSE            reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
-    IF              reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
-    ID              reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
+    $end            reduce using rule 3 (for_loop -> FOR ID ASSIGN expr COMMA expr DO statements END .)
+    END             reduce using rule 3 (for_loop -> FOR ID ASSIGN expr COMMA expr DO statements END .)
+    FOR             reduce using rule 3 (for_loop -> FOR ID ASSIGN expr COMMA expr DO statements END .)
+    ID              reduce using rule 3 (for_loop -> FOR ID ASSIGN expr COMMA expr DO statements END .)
+
+
+state 24
+
+    (5) statements -> statements statement .
+
+    END             reduce using rule 5 (statements -> statements statement .)
+    FOR             reduce using rule 5 (statements -> statements statement .)
+    ID              reduce using rule 5 (statements -> statements statement .)
+
+
+state 25
+
+    (4) for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements . END
+    (5) statements -> statements . statement
+    (1) statement -> . for_loop
+    (2) statement -> . assignment
+    (3) for_loop -> . FOR ID ASSIGN expr COMMA expr DO statements END
+    (4) for_loop -> . FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END
+    (7) assignment -> . ID ASSIGN expr
+
+    END             shift and go to state 26
+    FOR             shift and go to state 4
+    ID              shift and go to state 5
+
+    statement                      shift and go to state 24
+    for_loop                       shift and go to state 2
+    assignment                     shift and go to state 3
+
+state 26
+
+    (4) for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END .
+
+    $end            reduce using rule 4 (for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END .)
+    END             reduce using rule 4 (for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END .)
+    FOR             reduce using rule 4 (for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END .)
+    ID              reduce using rule 4 (for_loop -> FOR ID ASSIGN expr COMMA expr COMMA expr DO statements END .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for PLUS in state 21 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 15 resolved as shift

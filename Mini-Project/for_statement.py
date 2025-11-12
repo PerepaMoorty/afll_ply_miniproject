@@ -4,7 +4,7 @@ code = ''' for i = 1, 10, 2 do x = x + i end '''
 import ply.lex as lex
 import ply.yacc as yacc
 
-# Lexer - Tokenize all the code
+# Lexer
 
 tokens = (
     'FOR',
@@ -38,7 +38,9 @@ def t_END(t):
     return t
 
 def t_error(t):
+    print(f"Illegal character '{t.value[0]}' at position {t.lexpos}")
     t.lexer.skip(1)
+    exit()
 
 lexer = lex.lex()
 lexer.input(code)
@@ -50,7 +52,7 @@ while True:
         break
     print(token)
 
-# Yacc - Parse the code
+# Parser
 
 def p_statement(p):
     '''statement : for_loop
@@ -78,11 +80,27 @@ def p_expr(p):
     '''expr : NUMBER
             | ID
             | expr PLUS expr'''
-    p[0] = ('+', p[1], p[3]) if len(p) == 4 else p[1]
+    if len(p) == 4:
+        p[0] = ('+', p[1], p[3])
+    else:
+        p[0] = p[1]
 
+# Error handler
 def p_error(p):
-    print("Syntax error at", p)
+    if p:
+        print(f"Syntax error at token '{p.type}' with value '{p.value}' (line unknown)")
+    else:
+        print("Syntax error at EOF")
 
 parser = yacc.yacc()
-print("\n\nParser Part:")
-print(parser.parse(code))
+
+print("\nParser Part:")
+try:
+    result = parser.parse(code)
+    if result:
+        print("Parsed successfully:")
+        print(result)
+    else:
+        print("Parsing failed: Invalid syntax or empty parse result")
+except Exception as e:
+    print("Parsing failed with error:", e)

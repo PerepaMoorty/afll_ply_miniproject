@@ -1,10 +1,10 @@
 # Example Lua code:
-code = ''' if x < 5 then y = 2 else y = y + 1 end '''
+code = ''' if x < 5 ;then y = 2 else y = y + 1 end '''
 
 import ply.lex as lex
 import ply.yacc as yacc
 
-# Lexer - Tokenize all the code
+# Lexer
 
 tokens = (
     'IF',
@@ -43,7 +43,9 @@ def t_END(t):
     return t
 
 def t_error(t):
+    print(f"Illegal character '{t.value[0]}' at position {t.lexpos}")
     t.lexer.skip(1)
+    exit()
 
 lexer = lex.lex()
 lexer.input(code)
@@ -55,7 +57,7 @@ while True:
         break
     print(token)
 
-# Yacc - Parse the code
+# Parser
 
 def p_statement(p):
     '''statement : if_statement
@@ -65,7 +67,10 @@ def p_statement(p):
 def p_if_statement(p):
     '''if_statement : IF condition THEN statements END
                     | IF condition THEN statements ELSE statements END'''
-    p[0] = ('if', p[2], p[4]) if len(p) == 6 else ('if-else', p[2], p[4], p[6])
+    if len(p) == 6:
+        p[0] = ('if', p[2], p[4])
+    else:
+        p[0] = ('if-else', p[2], p[4], p[6])
 
 def p_condition(p):
     'condition : ID OP expr'
@@ -84,11 +89,27 @@ def p_expr(p):
     '''expr : NUMBER
             | ID
             | expr PLUS expr'''
-    p[0] = ('+', p[1], p[3]) if len(p) == 4 else p[1]
+    if len(p) == 4:
+        p[0] = ('+', p[1], p[3])
+    else:
+        p[0] = p[1]
 
+# Error handler
 def p_error(p):
-    pass
+    if p:
+        print(f"Syntax error at token '{p.type}' with value '{p.value}' (line unknown)")
+    else:
+        print("Syntax error at EOF")
 
 parser = yacc.yacc()
-print("\n\nParser Part:")
-print(parser.parse(code))
+
+print("\nParser Part:")
+try:
+    result = parser.parse(code)
+    if result:
+        print("Parsed successfully:")
+        print(result)
+    else:
+        print("Parsing failed: Invalid syntax or empty parse result")
+except Exception as e:
+    print("Parsing failed with error:", e)
