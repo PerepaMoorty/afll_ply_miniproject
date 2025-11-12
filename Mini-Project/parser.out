@@ -3,51 +3,57 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Grammar
 
 Rule 0     S' -> statement
-Rule 1     statement -> assignment
-Rule 2     assignment -> ID EQUAL table
-Rule 3     table -> LBRACE fields RBRACE
-Rule 4     table -> LBRACE RBRACE
-Rule 5     fields -> fields COMMA field
-Rule 6     fields -> field
-Rule 7     field -> ID EQUAL value
-Rule 8     field -> LBRACKET value RBRACKET EQUAL value
-Rule 9     value -> NUMBER
-Rule 10    value -> ID
-Rule 11    value -> table
+Rule 1     statement -> if_statement
+Rule 2     statement -> assignment
+Rule 3     if_statement -> IF condition THEN statements END
+Rule 4     if_statement -> IF condition THEN statements ELSE statements END
+Rule 5     condition -> ID OP expr
+Rule 6     statements -> statements statement
+Rule 7     statements -> statement
+Rule 8     assignment -> ID ASSIGN expr
+Rule 9     expr -> NUMBER
+Rule 10    expr -> ID
+Rule 11    expr -> expr PLUS expr
 
 Terminals, with rules where they appear
 
-COMMA                : 5
-EQUAL                : 2 7 8
-ID                   : 2 7 10
-LBRACE               : 3 4
-LBRACKET             : 8
+ASSIGN               : 8
+ELSE                 : 4
+END                  : 3 4
+ID                   : 5 8 10
+IF                   : 3 4
 NUMBER               : 9
-RBRACE               : 3 4
-RBRACKET             : 8
+OP                   : 5
+PLUS                 : 11
+THEN                 : 3 4
 error                : 
 
 Nonterminals, with rules where they appear
 
-assignment           : 1
-field                : 5 6
-fields               : 3 5
-statement            : 0
-table                : 2 11
-value                : 7 8 8
+assignment           : 2
+condition            : 3 4
+expr                 : 5 8 11 11
+if_statement         : 1
+statement            : 6 7 0
+statements           : 3 4 4 6
 
 Parsing method: LALR
 
 state 0
 
     (0) S' -> . statement
-    (1) statement -> . assignment
-    (2) assignment -> . ID EQUAL table
+    (1) statement -> . if_statement
+    (2) statement -> . assignment
+    (3) if_statement -> . IF condition THEN statements END
+    (4) if_statement -> . IF condition THEN statements ELSE statements END
+    (8) assignment -> . ID ASSIGN expr
 
-    ID              shift and go to state 3
+    IF              shift and go to state 4
+    ID              shift and go to state 5
 
     statement                      shift and go to state 1
-    assignment                     shift and go to state 2
+    if_statement                   shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 1
 
@@ -57,215 +63,278 @@ state 1
 
 state 2
 
-    (1) statement -> assignment .
+    (1) statement -> if_statement .
 
-    $end            reduce using rule 1 (statement -> assignment .)
+    $end            reduce using rule 1 (statement -> if_statement .)
+    END             reduce using rule 1 (statement -> if_statement .)
+    ELSE            reduce using rule 1 (statement -> if_statement .)
+    IF              reduce using rule 1 (statement -> if_statement .)
+    ID              reduce using rule 1 (statement -> if_statement .)
 
 
 state 3
 
-    (2) assignment -> ID . EQUAL table
+    (2) statement -> assignment .
 
-    EQUAL           shift and go to state 4
+    $end            reduce using rule 2 (statement -> assignment .)
+    END             reduce using rule 2 (statement -> assignment .)
+    ELSE            reduce using rule 2 (statement -> assignment .)
+    IF              reduce using rule 2 (statement -> assignment .)
+    ID              reduce using rule 2 (statement -> assignment .)
 
 
 state 4
 
-    (2) assignment -> ID EQUAL . table
-    (3) table -> . LBRACE fields RBRACE
-    (4) table -> . LBRACE RBRACE
+    (3) if_statement -> IF . condition THEN statements END
+    (4) if_statement -> IF . condition THEN statements ELSE statements END
+    (5) condition -> . ID OP expr
 
-    LBRACE          shift and go to state 6
+    ID              shift and go to state 7
 
-    table                          shift and go to state 5
+    condition                      shift and go to state 6
 
 state 5
 
-    (2) assignment -> ID EQUAL table .
+    (8) assignment -> ID . ASSIGN expr
 
-    $end            reduce using rule 2 (assignment -> ID EQUAL table .)
+    ASSIGN          shift and go to state 8
 
 
 state 6
 
-    (3) table -> LBRACE . fields RBRACE
-    (4) table -> LBRACE . RBRACE
-    (5) fields -> . fields COMMA field
-    (6) fields -> . field
-    (7) field -> . ID EQUAL value
-    (8) field -> . LBRACKET value RBRACKET EQUAL value
+    (3) if_statement -> IF condition . THEN statements END
+    (4) if_statement -> IF condition . THEN statements ELSE statements END
 
-    RBRACE          shift and go to state 8
-    ID              shift and go to state 10
-    LBRACKET        shift and go to state 11
+    THEN            shift and go to state 9
 
-    fields                         shift and go to state 7
-    field                          shift and go to state 9
 
 state 7
 
-    (3) table -> LBRACE fields . RBRACE
-    (5) fields -> fields . COMMA field
+    (5) condition -> ID . OP expr
 
-    RBRACE          shift and go to state 12
-    COMMA           shift and go to state 13
+    OP              shift and go to state 10
 
 
 state 8
 
-    (4) table -> LBRACE RBRACE .
+    (8) assignment -> ID ASSIGN . expr
+    (9) expr -> . NUMBER
+    (10) expr -> . ID
+    (11) expr -> . expr PLUS expr
 
-    $end            reduce using rule 4 (table -> LBRACE RBRACE .)
-    RBRACKET        reduce using rule 4 (table -> LBRACE RBRACE .)
-    RBRACE          reduce using rule 4 (table -> LBRACE RBRACE .)
-    COMMA           reduce using rule 4 (table -> LBRACE RBRACE .)
+    NUMBER          shift and go to state 13
+    ID              shift and go to state 11
 
+    expr                           shift and go to state 12
 
 state 9
 
-    (6) fields -> field .
+    (3) if_statement -> IF condition THEN . statements END
+    (4) if_statement -> IF condition THEN . statements ELSE statements END
+    (6) statements -> . statements statement
+    (7) statements -> . statement
+    (1) statement -> . if_statement
+    (2) statement -> . assignment
+    (3) if_statement -> . IF condition THEN statements END
+    (4) if_statement -> . IF condition THEN statements ELSE statements END
+    (8) assignment -> . ID ASSIGN expr
 
-    RBRACE          reduce using rule 6 (fields -> field .)
-    COMMA           reduce using rule 6 (fields -> field .)
+    IF              shift and go to state 4
+    ID              shift and go to state 5
 
+    statements                     shift and go to state 14
+    statement                      shift and go to state 15
+    if_statement                   shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 10
 
-    (7) field -> ID . EQUAL value
+    (5) condition -> ID OP . expr
+    (9) expr -> . NUMBER
+    (10) expr -> . ID
+    (11) expr -> . expr PLUS expr
 
-    EQUAL           shift and go to state 14
+    NUMBER          shift and go to state 13
+    ID              shift and go to state 11
 
+    expr                           shift and go to state 16
 
 state 11
 
-    (8) field -> LBRACKET . value RBRACKET EQUAL value
-    (9) value -> . NUMBER
-    (10) value -> . ID
-    (11) value -> . table
-    (3) table -> . LBRACE fields RBRACE
-    (4) table -> . LBRACE RBRACE
+    (10) expr -> ID .
 
-    NUMBER          shift and go to state 16
-    ID              shift and go to state 17
-    LBRACE          shift and go to state 6
+    PLUS            reduce using rule 10 (expr -> ID .)
+    $end            reduce using rule 10 (expr -> ID .)
+    END             reduce using rule 10 (expr -> ID .)
+    ELSE            reduce using rule 10 (expr -> ID .)
+    IF              reduce using rule 10 (expr -> ID .)
+    ID              reduce using rule 10 (expr -> ID .)
+    THEN            reduce using rule 10 (expr -> ID .)
 
-    value                          shift and go to state 15
-    table                          shift and go to state 18
 
 state 12
 
-    (3) table -> LBRACE fields RBRACE .
+    (8) assignment -> ID ASSIGN expr .
+    (11) expr -> expr . PLUS expr
 
-    $end            reduce using rule 3 (table -> LBRACE fields RBRACE .)
-    RBRACKET        reduce using rule 3 (table -> LBRACE fields RBRACE .)
-    RBRACE          reduce using rule 3 (table -> LBRACE fields RBRACE .)
-    COMMA           reduce using rule 3 (table -> LBRACE fields RBRACE .)
+    $end            reduce using rule 8 (assignment -> ID ASSIGN expr .)
+    END             reduce using rule 8 (assignment -> ID ASSIGN expr .)
+    ELSE            reduce using rule 8 (assignment -> ID ASSIGN expr .)
+    IF              reduce using rule 8 (assignment -> ID ASSIGN expr .)
+    ID              reduce using rule 8 (assignment -> ID ASSIGN expr .)
+    PLUS            shift and go to state 17
 
 
 state 13
 
-    (5) fields -> fields COMMA . field
-    (7) field -> . ID EQUAL value
-    (8) field -> . LBRACKET value RBRACKET EQUAL value
+    (9) expr -> NUMBER .
 
-    ID              shift and go to state 10
-    LBRACKET        shift and go to state 11
+    PLUS            reduce using rule 9 (expr -> NUMBER .)
+    $end            reduce using rule 9 (expr -> NUMBER .)
+    END             reduce using rule 9 (expr -> NUMBER .)
+    ELSE            reduce using rule 9 (expr -> NUMBER .)
+    IF              reduce using rule 9 (expr -> NUMBER .)
+    ID              reduce using rule 9 (expr -> NUMBER .)
+    THEN            reduce using rule 9 (expr -> NUMBER .)
 
-    field                          shift and go to state 19
 
 state 14
 
-    (7) field -> ID EQUAL . value
-    (9) value -> . NUMBER
-    (10) value -> . ID
-    (11) value -> . table
-    (3) table -> . LBRACE fields RBRACE
-    (4) table -> . LBRACE RBRACE
+    (3) if_statement -> IF condition THEN statements . END
+    (4) if_statement -> IF condition THEN statements . ELSE statements END
+    (6) statements -> statements . statement
+    (1) statement -> . if_statement
+    (2) statement -> . assignment
+    (3) if_statement -> . IF condition THEN statements END
+    (4) if_statement -> . IF condition THEN statements ELSE statements END
+    (8) assignment -> . ID ASSIGN expr
 
-    NUMBER          shift and go to state 16
-    ID              shift and go to state 17
-    LBRACE          shift and go to state 6
+    END             shift and go to state 18
+    ELSE            shift and go to state 19
+    IF              shift and go to state 4
+    ID              shift and go to state 5
 
-    value                          shift and go to state 20
-    table                          shift and go to state 18
+    statement                      shift and go to state 20
+    if_statement                   shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 15
 
-    (8) field -> LBRACKET value . RBRACKET EQUAL value
+    (7) statements -> statement .
 
-    RBRACKET        shift and go to state 21
+    END             reduce using rule 7 (statements -> statement .)
+    ELSE            reduce using rule 7 (statements -> statement .)
+    IF              reduce using rule 7 (statements -> statement .)
+    ID              reduce using rule 7 (statements -> statement .)
 
 
 state 16
 
-    (9) value -> NUMBER .
+    (5) condition -> ID OP expr .
+    (11) expr -> expr . PLUS expr
 
-    RBRACKET        reduce using rule 9 (value -> NUMBER .)
-    RBRACE          reduce using rule 9 (value -> NUMBER .)
-    COMMA           reduce using rule 9 (value -> NUMBER .)
+    THEN            reduce using rule 5 (condition -> ID OP expr .)
+    PLUS            shift and go to state 17
 
 
 state 17
 
-    (10) value -> ID .
+    (11) expr -> expr PLUS . expr
+    (9) expr -> . NUMBER
+    (10) expr -> . ID
+    (11) expr -> . expr PLUS expr
 
-    RBRACKET        reduce using rule 10 (value -> ID .)
-    RBRACE          reduce using rule 10 (value -> ID .)
-    COMMA           reduce using rule 10 (value -> ID .)
+    NUMBER          shift and go to state 13
+    ID              shift and go to state 11
 
+    expr                           shift and go to state 21
 
 state 18
 
-    (11) value -> table .
+    (3) if_statement -> IF condition THEN statements END .
 
-    RBRACKET        reduce using rule 11 (value -> table .)
-    RBRACE          reduce using rule 11 (value -> table .)
-    COMMA           reduce using rule 11 (value -> table .)
+    $end            reduce using rule 3 (if_statement -> IF condition THEN statements END .)
+    END             reduce using rule 3 (if_statement -> IF condition THEN statements END .)
+    ELSE            reduce using rule 3 (if_statement -> IF condition THEN statements END .)
+    IF              reduce using rule 3 (if_statement -> IF condition THEN statements END .)
+    ID              reduce using rule 3 (if_statement -> IF condition THEN statements END .)
 
 
 state 19
 
-    (5) fields -> fields COMMA field .
+    (4) if_statement -> IF condition THEN statements ELSE . statements END
+    (6) statements -> . statements statement
+    (7) statements -> . statement
+    (1) statement -> . if_statement
+    (2) statement -> . assignment
+    (3) if_statement -> . IF condition THEN statements END
+    (4) if_statement -> . IF condition THEN statements ELSE statements END
+    (8) assignment -> . ID ASSIGN expr
 
-    RBRACE          reduce using rule 5 (fields -> fields COMMA field .)
-    COMMA           reduce using rule 5 (fields -> fields COMMA field .)
+    IF              shift and go to state 4
+    ID              shift and go to state 5
 
+    statements                     shift and go to state 22
+    statement                      shift and go to state 15
+    if_statement                   shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 20
 
-    (7) field -> ID EQUAL value .
+    (6) statements -> statements statement .
 
-    RBRACE          reduce using rule 7 (field -> ID EQUAL value .)
-    COMMA           reduce using rule 7 (field -> ID EQUAL value .)
+    END             reduce using rule 6 (statements -> statements statement .)
+    ELSE            reduce using rule 6 (statements -> statements statement .)
+    IF              reduce using rule 6 (statements -> statements statement .)
+    ID              reduce using rule 6 (statements -> statements statement .)
 
 
 state 21
 
-    (8) field -> LBRACKET value RBRACKET . EQUAL value
+    (11) expr -> expr PLUS expr .
+    (11) expr -> expr . PLUS expr
 
-    EQUAL           shift and go to state 22
+  ! shift/reduce conflict for PLUS resolved as shift
+    $end            reduce using rule 11 (expr -> expr PLUS expr .)
+    END             reduce using rule 11 (expr -> expr PLUS expr .)
+    ELSE            reduce using rule 11 (expr -> expr PLUS expr .)
+    IF              reduce using rule 11 (expr -> expr PLUS expr .)
+    ID              reduce using rule 11 (expr -> expr PLUS expr .)
+    THEN            reduce using rule 11 (expr -> expr PLUS expr .)
+    PLUS            shift and go to state 17
+
+  ! PLUS            [ reduce using rule 11 (expr -> expr PLUS expr .) ]
 
 
 state 22
 
-    (8) field -> LBRACKET value RBRACKET EQUAL . value
-    (9) value -> . NUMBER
-    (10) value -> . ID
-    (11) value -> . table
-    (3) table -> . LBRACE fields RBRACE
-    (4) table -> . LBRACE RBRACE
+    (4) if_statement -> IF condition THEN statements ELSE statements . END
+    (6) statements -> statements . statement
+    (1) statement -> . if_statement
+    (2) statement -> . assignment
+    (3) if_statement -> . IF condition THEN statements END
+    (4) if_statement -> . IF condition THEN statements ELSE statements END
+    (8) assignment -> . ID ASSIGN expr
 
-    NUMBER          shift and go to state 16
-    ID              shift and go to state 17
-    LBRACE          shift and go to state 6
+    END             shift and go to state 23
+    IF              shift and go to state 4
+    ID              shift and go to state 5
 
-    value                          shift and go to state 23
-    table                          shift and go to state 18
+    statement                      shift and go to state 20
+    if_statement                   shift and go to state 2
+    assignment                     shift and go to state 3
 
 state 23
 
-    (8) field -> LBRACKET value RBRACKET EQUAL value .
+    (4) if_statement -> IF condition THEN statements ELSE statements END .
 
-    RBRACE          reduce using rule 8 (field -> LBRACKET value RBRACKET EQUAL value .)
-    COMMA           reduce using rule 8 (field -> LBRACKET value RBRACKET EQUAL value .)
+    $end            reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
+    END             reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
+    ELSE            reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
+    IF              reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
+    ID              reduce using rule 4 (if_statement -> IF condition THEN statements ELSE statements END .)
 
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for PLUS in state 21 resolved as shift

@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'COMMA EQUAL ID LBRACE LBRACKET NUMBER RBRACE RBRACKETstatement : assignmentassignment : ID EQUAL tabletable : LBRACE fields RBRACE\n| LBRACE RBRACEfields : fields COMMA fieldfields : fieldfield : ID EQUAL value\n| LBRACKET value RBRACKET EQUAL valuevalue : NUMBER\n| ID\n| table'
+_lr_signature = 'ASSIGN ELSE END ID IF NUMBER OP PLUS THENstatement : if_statement\n| assignmentif_statement : IF condition THEN statements END\n| IF condition THEN statements ELSE statements ENDcondition : ID OP exprstatements : statements statement\n| statementassignment : ID ASSIGN exprexpr : NUMBER\n| ID\n| expr PLUS expr'
     
-_lr_action_items = {'ID':([0,6,11,13,14,22,],[3,10,17,10,17,17,]),'$end':([1,2,5,8,12,],[0,-1,-2,-4,-3,]),'EQUAL':([3,10,21,],[4,14,22,]),'LBRACE':([4,11,14,22,],[6,6,6,6,]),'RBRACE':([6,7,8,9,12,16,17,18,19,20,23,],[8,12,-4,-6,-3,-9,-10,-11,-5,-7,-8,]),'LBRACKET':([6,13,],[11,11,]),'COMMA':([7,8,9,12,16,17,18,19,20,23,],[13,-4,-6,-3,-9,-10,-11,-5,-7,-8,]),'RBRACKET':([8,12,15,16,17,18,],[-4,-3,21,-9,-10,-11,]),'NUMBER':([11,14,22,],[16,16,16,]),}
+_lr_action_items = {'IF':([0,2,3,9,11,12,13,14,15,18,19,20,21,22,23,],[4,-1,-2,4,-10,-8,-9,4,-7,-3,4,-6,-11,4,-4,]),'ID':([0,2,3,4,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,],[5,-1,-2,7,11,5,11,-10,-8,-9,5,-7,11,-3,5,-6,-11,5,-4,]),'$end':([1,2,3,11,12,13,18,21,23,],[0,-1,-2,-10,-8,-9,-3,-11,-4,]),'END':([2,3,11,12,13,14,15,18,20,21,22,23,],[-1,-2,-10,-8,-9,18,-7,-3,-6,-11,23,-4,]),'ELSE':([2,3,11,12,13,14,15,18,20,21,23,],[-1,-2,-10,-8,-9,19,-7,-3,-6,-11,-4,]),'ASSIGN':([5,],[8,]),'THEN':([6,11,13,16,21,],[9,-10,-9,-5,-11,]),'OP':([7,],[10,]),'NUMBER':([8,10,17,],[13,13,13,]),'PLUS':([11,12,13,16,21,],[-10,17,-9,17,17,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,],[1,]),'assignment':([0,],[2,]),'table':([4,11,14,22,],[5,18,18,18,]),'fields':([6,],[7,]),'field':([6,13,],[9,19,]),'value':([11,14,22,],[15,20,23,]),}
+_lr_goto_items = {'statement':([0,9,14,19,22,],[1,15,20,15,20,]),'if_statement':([0,9,14,19,22,],[2,2,2,2,2,]),'assignment':([0,9,14,19,22,],[3,3,3,3,3,]),'condition':([4,],[6,]),'expr':([8,10,17,],[12,16,21,]),'statements':([9,19,],[14,22,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,15 +27,15 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> assignment','statement',1,'p_statement','tables_statement.py',47),
-  ('assignment -> ID EQUAL table','assignment',3,'p_assignment','tables_statement.py',51),
-  ('table -> LBRACE fields RBRACE','table',3,'p_table','tables_statement.py',55),
-  ('table -> LBRACE RBRACE','table',2,'p_table','tables_statement.py',56),
-  ('fields -> fields COMMA field','fields',3,'p_fields_multi','tables_statement.py',60),
-  ('fields -> field','fields',1,'p_fields_single','tables_statement.py',64),
-  ('field -> ID EQUAL value','field',3,'p_field','tables_statement.py',68),
-  ('field -> LBRACKET value RBRACKET EQUAL value','field',5,'p_field','tables_statement.py',69),
-  ('value -> NUMBER','value',1,'p_value','tables_statement.py',76),
-  ('value -> ID','value',1,'p_value','tables_statement.py',77),
-  ('value -> table','value',1,'p_value','tables_statement.py',78),
+  ('statement -> if_statement','statement',1,'p_statement','if-else-statement.py',61),
+  ('statement -> assignment','statement',1,'p_statement','if-else-statement.py',62),
+  ('if_statement -> IF condition THEN statements END','if_statement',5,'p_if_statement','if-else-statement.py',66),
+  ('if_statement -> IF condition THEN statements ELSE statements END','if_statement',7,'p_if_statement','if-else-statement.py',67),
+  ('condition -> ID OP expr','condition',3,'p_condition','if-else-statement.py',71),
+  ('statements -> statements statement','statements',2,'p_statements','if-else-statement.py',75),
+  ('statements -> statement','statements',1,'p_statements','if-else-statement.py',76),
+  ('assignment -> ID ASSIGN expr','assignment',3,'p_assignment','if-else-statement.py',80),
+  ('expr -> NUMBER','expr',1,'p_expr','if-else-statement.py',84),
+  ('expr -> ID','expr',1,'p_expr','if-else-statement.py',85),
+  ('expr -> expr PLUS expr','expr',3,'p_expr','if-else-statement.py',86),
 ]
